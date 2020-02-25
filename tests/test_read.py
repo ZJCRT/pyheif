@@ -82,6 +82,8 @@ def test_read_file_icc_color_profile():
 def test_load_into_pillow():
     for fn in glob.glob('tests/images/*.heic'):
         heif_file = pyheif.read_heif(fn)
-        pi = Image.frombytes(
+        i = Image.frombytes(
                 mode=heif_file.mode, size=heif_file.size, data=heif_file.data)
+        assert(i.mode == heif_file.mode)
+        assert(i.size == heif_file.size)
 

@@ -74,9 +74,9 @@ def _read_heif_handle(handle, apply_transformations):
             chroma = heif_chroma_interleaved_RGBA
     else:
         if image_has_alpha == 0:
-            chroma = heif_chroma_interleaved_RRGGBB_LE
+            chroma = heif_chroma_interleaved_RRGGBB_BE
         else:
-            chroma = heif_chroma_interleaved_RRGGBBAA_LE
+            chroma = heif_chroma_interleaved_RRGGBBAA_BE
 
     p_img = ffi.new('struct heif_image **')
     p_options = lib.heif_decoding_options_alloc()

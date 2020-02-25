@@ -21,6 +21,10 @@ int heif_image_handle_get_height(
     const struct heif_image_handle* handle);
 int heif_image_handle_has_alpha_channel(
     const struct heif_image_handle*);
+int heif_image_handle_get_luma_bits_per_pixel(
+    const struct heif_image_handle*);
+int heif_image_handle_get_chroma_bits_per_pixel(
+    const struct heif_image_handle*);
 
 struct heif_decoding_options
 {

@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath('.'))
 
 import piexif
 import pyheif
-from PIL import ImageCms
+from PIL import Image, ImageCms
 
 
 def test_read_file_names():
@@ -31,6 +31,7 @@ def test_read_file_objects():
             assert(height > 0)
             assert(len(heif_file.data) > 0)
         
+
 def test_read_file_bytes():
     for fn in glob.glob('tests/images/*.heic'):
         with open(fn, 'rb') as f:
@@ -43,6 +44,7 @@ def test_read_file_bytes():
             assert(height > 0)
             assert(len(heif_file.data) > 0)
         
+
 def test_read_file_bytearrays():
     for fn in glob.glob('tests/images/*.heic'):
         with open(fn, 'rb') as f:
@@ -56,6 +58,7 @@ def test_read_file_bytearrays():
             assert(height > 0)
             assert(len(heif_file.data) > 0)
 
+
 def test_read_file_exif_metadata():
     for fn in glob.glob('tests/images/*.heic'):
         heif_file = pyheif.read_heif(fn)
@@ -67,10 +70,18 @@ def test_read_file_exif_metadata():
                 assert('Exif' in exif_dict)
                 assert(len(exif_dict['Exif']) > 0)
 
+
 def test_read_file_icc_color_profile():
     for fn in glob.glob('tests/images/*.heic'):
         heif_file = pyheif.read_heif(fn)
         if heif_file.color_profile and heif_file.color_profile['type'] in ['prof','rICC']:
             profile = io.BytesIO(heif_file.color_profile['data'])
             cms = ImageCms.getOpenProfile(profile)
+
+
+def test_load_into_pillow():
+    for fn in glob.glob('tests/images/*.heic'):
+        heif_file = pyheif.read_heif(fn)
+        pi = Image.frombytes(
+                mode=heif_file.mode, size=heif_file.size, data=heif_file.data)
 

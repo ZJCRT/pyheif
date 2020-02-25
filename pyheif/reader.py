@@ -62,8 +62,21 @@ def _read_heif_context(ctx, d, apply_transformations):
 
 
 def _read_heif_handle(handle, apply_transformations):
-    alpha = lib.heif_image_handle_has_alpha_channel(handle)
-    mode = 'RGB' if alpha==0 else 'RGBA'
+    image_has_alpha = lib.heif_image_handle_has_alpha_channel(handle)
+    image_chroma_bits = lib.heif_image_handle_get_chroma_bits_per_pixel(handle)
+
+    mode = 'RGB' if image_has_alpha==0 else 'RGBA'
+    chroma = heif_chroma_undefined
+    if image_chroma_bits <= 8:
+        if image_has_alpha == 0:
+            chroma = heif_chroma_interleaved_RGB
+        else:
+            chroma = heif_chroma_interleaved_RGBA
+    else:
+        if image_has_alpha == 0:
+            chroma = heif_chroma_interleaved_RRGGBB_LE
+        else:
+            chroma = heif_chroma_interleaved_RRGGBBAA_LE
 
     p_img = ffi.new('struct heif_image **')
     p_options = lib.heif_decoding_options_alloc()
@@ -71,7 +84,7 @@ def _read_heif_handle(handle, apply_transformations):
         p_options.ignore_transformations=1
     error = lib.heif_decode_image(
             handle, p_img, heif_colorspace_RGB, 
-            heif_chroma_interleaved_RGB if mode=='RGB' else heif_chroma_interleaved_RGBA, 
+            chroma,
             p_options)
     lib.heif_decoding_options_free(p_options)
     if error.code != 0:
@@ -149,7 +162,7 @@ def _read_color_profile(handle):
 
 def _read_heif_image(img, height):
     p_stride = ffi.new('int *')
-    p_data = lib.heif_image_get_plane_readonly(img, heif_channel_interleaved, p_stride);
+    p_data = lib.heif_image_get_plane_readonly(img, heif_channel_interleaved, p_stride)
     stride = p_stride[0]
 
     data_length = height * stride

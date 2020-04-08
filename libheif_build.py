@@ -94,6 +94,7 @@ ffibuilder.set_source("_libheif_cffi",
         '/usr/include'
         ],
     library_dirs=[
+	'/use/lib/x86_64-linux-gnu
         '/usr/local/lib',
         '/usr/lib',
         '/lib'],
